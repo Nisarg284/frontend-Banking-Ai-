@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const rawBackendUrl = import.meta.env.VITE_BACKEND_URL;
+const rawBackendUrl = "https://banking-ai-assistant-zeuk.onrender.com";
 
 // Debugging: print what Vite exposes in the browser console (only in dev builds this will be useful)
 try {
