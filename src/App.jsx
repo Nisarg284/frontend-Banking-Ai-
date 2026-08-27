@@ -74,16 +74,11 @@ function App() {
 
   return (
     <div className="app-shell">
-      <header className="site-header">
-        <a className="brand" href="/" aria-label="Finora home"><span className="brand-mark">F</span><span className="brand-name">finora</span></a>
-        <div className="header-actions"><span className="connection-label"><span className="status-dot" /> Assistant</span><button className="icon-button" onClick={() => setIsDarkMode((value) => !value)} aria-label="Toggle color theme"><Icon name={isDarkMode ? "sun" : "moon"} size={17} /></button></div>
-      </header>
-
       <main className="chat-page">
         <section className="chat-intro"><p className="eyebrow">BANKING AI ASSISTANT</p><h1>How can I help?</h1><p>Ask about policies, documents, eligibility, or EMI calculations.</p></section>
 
         <section className="chat-card" aria-label="Banking AI Assistant chat">
-          <div className="chat-card-header"><div className="assistant-title"><span className="assistant-icon"><Icon name="spark" size={16} /></span><div><h2>Banking AI Assistant</h2><p>Ask in your own words</p></div></div><button className="new-chat" onClick={resetConversation}><Icon name="plus" size={14} /><span>New chat</span></button></div>
+          <div className="chat-card-header"><div className="assistant-title"><span className="assistant-icon"><Icon name="spark" size={16} /></span><div><h2>Banking AI Assistant</h2><p>Ask in your own words</p></div></div><div className="card-actions"><button className="icon-button" onClick={() => setIsDarkMode((value) => !value)} aria-label="Toggle color theme"><Icon name={isDarkMode ? "sun" : "moon"} size={17} /></button><button className="new-chat" onClick={resetConversation}><Icon name="plus" size={14} /><span>New chat</span></button></div></div>
           <div className="chat-stream" aria-live="polite">
             {messages.map((message) => <div className={`message-row ${message.sender === "user" ? "user-row" : ""}`} key={message.id}>{message.sender === "bot" && <span className="message-icon"><Icon name="spark" size={12} /></span>}<div className={`message-bubble ${message.sender === "user" ? "user-bubble" : "bot-bubble"} ${message.error ? "error-bubble" : ""}`}><p>{message.text}</p><time>{message.time}</time></div></div>)}
             {loading && <div className="message-row"><span className="message-icon"><Icon name="spark" size={12} /></span><div className="message-bubble bot-bubble typing-bubble"><span className="typing-dot" /><span className="typing-dot" /><span className="typing-dot" /><span className="typing-label">Thinking...</span></div></div>}
