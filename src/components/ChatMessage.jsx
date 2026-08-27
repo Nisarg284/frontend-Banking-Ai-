@@ -1,6 +1,3 @@
-import {useEffect, useRef} from "react";
-
-
 
 function ChatMessage({ message }) {
 
