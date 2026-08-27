@@ -1,36 +1,30 @@
 import axios from "axios";
 
-const rawBackendUrl = "https://banking-ai-assistant-zeuk.onrender.com";
-
-// Debugging: print what Vite exposes in the browser console (only in dev builds this will be useful)
-try {
-  // Use console.debug so it's less noisy; open browser devtools to inspect
-  console.debug("import.meta.env:", import.meta.env);
-  console.debug("VITE_BACKEND_URL:", rawBackendUrl);
-} catch {
-  // import.meta may not be available in some contexts; ignore silently
-}
-
-if (!rawBackendUrl) {
-  console.warn(
-    "VITE_BACKEND_URL is not set. Make sure you have a .env file at the project root with VITE_BACKEND_URL=... and restart the dev server. Falling back to http://localhost:8080"
-  );
-}
-
-const API_BASE_URL = rawBackendUrl
-  ? String(rawBackendUrl).replace(/\/+$/, "") // remove trailing slashes
-  : "http://localhost:8081";
+const API_BASE_URL = (import.meta.env.VITE_BACKEND_URL || "https://banking-ai-assistant-zeuk.onrender.com").replace(/\/+$/, "");
 
 export const askQuestion = async (question) => {
-    const response = await axios.post(
-        `${API_BASE_URL}/assistant/ask`,
-        question,
-        {
-            headers: {
-                "Content-Type": "text/plain"
-            }
-        }
-    );
-
+  try {
+    const response = await axios.post(`${API_BASE_URL}/assistant/ask`, question, {
+      headers: { "Content-Type": "text/plain" },
+      timeout: 60000,
+    });
     return response.data;
+  } catch (error) {
+    if (error.response) {
+      const backendError = new Error(`The Banking AI Assistant returned HTTP ${error.response.status}.`);
+      backendError.code = "BACKEND_HTTP_ERROR";
+      backendError.status = error.response.status;
+      throw backendError;
+    }
+
+    if (error.code === "ECONNABORTED" || error.code === "ETIMEDOUT") {
+      const timeoutError = new Error("The Banking AI Assistant took too long to respond.");
+      timeoutError.code = "BACKEND_TIMEOUT";
+      throw timeoutError;
+    }
+
+    const networkError = new Error("The frontend could not reach the Banking AI Assistant.");
+    networkError.code = "NETWORK_ERROR";
+    throw networkError;
+  }
 };

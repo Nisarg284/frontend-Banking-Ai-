@@ -64,7 +64,12 @@ function App() {
       setMessages((previous) => [...previous, { id: `bot-${Date.now()}`, sender: "bot", text: typeof answer === "string" ? answer : JSON.stringify(answer), time: "Just now" }]);
     } catch (error) {
       console.error(error);
-      setMessages((previous) => [...previous, { id: `error-${Date.now()}`, sender: "bot", text: "I couldn’t reach the Banking AI Assistant right now. Please try again in a moment.", time: "Just now", error: true }]);
+      const errorText = error.code === "BACKEND_HTTP_ERROR"
+        ? `The Banking AI Assistant is reachable, but its server returned HTTP ${error.status}. The issue is on the backend service, not this frontend.`
+        : error.code === "BACKEND_TIMEOUT"
+          ? "The Banking AI Assistant is taking too long to respond. The backend may be waking up or unavailable. Please try again shortly."
+          : "The frontend could not reach the Banking AI Assistant. Please check the backend URL and service availability.";
+      setMessages((previous) => [...previous, { id: `error-${Date.now()}`, sender: "bot", text: errorText, time: "Just now", error: true }]);
     } finally {
       setLoading(false);
     }
